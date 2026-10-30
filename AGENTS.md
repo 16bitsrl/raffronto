@@ -11,4 +11,4 @@ Diff tracker di documenti .docx e .pdf in una sola pagina HTML, tutto client-sid
 - Marketing: anteprima dei link (`src/social.png`, `src/social-en.png`, sorgente in `brand/social/`), `robots.txt`, `sitemap.xml`, statistiche Umami (mai la parte dopo `#`); test in `tests/marketing.sh` (chiamato da `e2e.sh`); vedi docs.
 - App desktop (Tauri 2) in `desktop/`: usa la home italiana generata (`site/index.html`) con pdf.js e font inclusi; vedi `desktop/README.md`.
 - Marchio in `brand/` (direzione scelta: `brand/logo/01-fogli-nastro/`, indicazioni in `brand/README.md`).
-- Commit della cartella `docs/`: da chiedere (la cartella non è un repository git al 9/10/2026).
+- Repository pubblico https://github.com/16bitsrl/raffronto. La cartella `docs/` non va mai committata (decisione del 30/10/2026: resta privata, è nel `.gitignore`), e nemmeno `deploy.php`.
