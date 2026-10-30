@@ -66,7 +66,8 @@ patch('privacy note', /I documenti restano sul tuo computer, a meno che tu non s
 // 4. Visit statistics, the desktop app download link and the other site links are for the website only; the 16bit credit stays as plain text, since a link would
 // take the app window away from the comparison
 patch('statistics', /<!-- visit statistics[^\n]*\n<script defer src="https:\/\/stats\.16bit\.cloud\/s\.js"[^\n]*\n/, '');
-patch('language hint', /<p class="lang-hint"[^]*?<\/p>\n/, '');
+patch('language hint', /<div class="lang-hint"[^]*?<\/span><\/div>\n/, '');
+patch('download button', /  <a class="btn get-app site-only" id="getApp"[^\n]*\n/, '');
 patch('pages for each profession', /<nav class="for"[^]*?<\/nav>/, '');
 patch('language switch', /<a href="\/en" hreflang="en" lang="en">English<\/a> /, '');
 patch('desktop app, privacy and terms', /<a href="\/scarica">App per computer<\/a> <a href="\/privacy">Privacy<\/a> <a href="\/termini">Termini<\/a> /, '');

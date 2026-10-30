@@ -161,6 +161,7 @@
   "until {date}": "fino {al}{date}",
   "until {date} at {time}": "fino {al}{date} alle {time}",
   "Close": "Chiudi",
+  "Get the app": "Scarica l’app",
   "Link ready": "Link pronto",
   "Anyone who opens the link sees this comparison, with the same documents. The link works {until}, then the documents are deleted from our server.": "Chi apre il link vede questo confronto, con gli stessi documenti. Il link funziona {until}, poi i documenti vengono cancellati dal nostro server.",
   "Link copied": "Link copiato",

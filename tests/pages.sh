@@ -44,5 +44,11 @@ run "browser in inglese sulla pagina italiana: invito alla versione inglese, che
 run "browser in italiano: niente invito sull'italiano, invito sulla pagina inglese" \
   "$HINT const it = await visit('it-IT', '/', shown); const en = await visit('it-IT', '/en/notaries', async p => ({ shown: await shown(p), text: await p.locator('#langHint a').textContent(), href: await p.locator('#langHint a').getAttribute('href') })); const de = await visit('de-DE', '/', shown); return !it && en.shown && /disponibile anche in italiano/.test(en.text) && en.href === '/notai' && de ? 'ok' : JSON.stringify({ it, en, de });"
 
+run "chiudere l'invito alla lingua: resta chiuso anche alla visita dopo" \
+  "$HINT const r = await visit('en-US', '/notai', async p => { const first = await shown(p); await p.locator('#langHintClose').click(); const after = await shown(p); await p.goto('$BASE/avvocati'); const later = await shown(p); return { first, after, later }; }); return r.first && !r.after && !r.later ? 'ok' : JSON.stringify(r);"
+
+run "pulsante scarica l'app in alto: va alla pagina giusta, sparisce durante il confronto" \
+  "const r = {}; for (const [path, want] of [['/', '/scarica'], ['/en/lawyers', '/en/download']]) { await page.goto('$BASE' + path); const b = page.locator('#getApp'); r[path] = { visible: await b.isVisible(), href: await b.getAttribute('href'), text: (await b.textContent()).trim() }; if (r[path].href !== want || !r[path].visible) return JSON.stringify(r); } const ins = page.locator('.drop input'); await ins.nth(0).setInputFiles('$FX/agreement-v1.pdf'); await ins.nth(1).setInputFiles('$FX/agreement-v2.pdf'); await page.waitForFunction(() => !document.querySelector('#ws').hidden, null, { timeout: 30000 }); const during = await page.locator('#getApp').isVisible(); return r['/'].text === 'Scarica l’app' && r['/en/lawyers'].text === 'Get the app' && !during ? 'ok' : JSON.stringify({ r, during });"
+
 playwright-cli -s=$S close >/dev/null
 exit $fail
