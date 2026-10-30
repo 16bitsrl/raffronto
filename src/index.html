@@ -134,6 +134,8 @@ button { font: inherit; color: inherit; }
   padding: 40px 24px 56px;
 }
 .hero { max-width: 980px; width: 100%; }
+/* on the site the page is long: the title starts lower, away from the bar */
+@media (min-width: 900px) { html:not(.app) .landing { padding-top: 96px; } }
 .hero h1 {
   font-family: var(--display); font-weight: 400;
   font-size: clamp(40px, 6.4vw, 76px); line-height: 1.12; letter-spacing: -.015em;
