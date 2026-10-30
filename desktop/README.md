@@ -5,7 +5,7 @@ App desktop di Raffronto fatta con Tauri 2: una finestra che apre la stessa pagi
 ## Cosa serve
 
 - Rust (stable) con `cargo`.
-- Node.js e npm (per la CLI di Tauri, pdf.js e i font).
+- Node.js e npm (per la CLI di Tauri qui, e per pdf.js e i font con `npm install` nella radice del repository).
 - Su macOS gli strumenti a riga di comando di Xcode.
 
 ## Comandi
@@ -29,14 +29,13 @@ La pagina non si copia a mano: `scripts/prepare-web.mjs` parte da solo prima di 
 
 Lo script adatta la copia così:
 
-1. **pdf.js locale.** Gli indirizzi `https://cdn.jsdelivr.net/npm/pdfjs-dist@<versione>/build/` diventano `./vendor/pdfjs/`, con i file presi dal pacchetto npm `pdfjs-dist`. Se la versione nella pagina cambia, la build si ferma e chiede di allineare `pdfjs-dist` in `package.json` (poi `npm install`).
-2. **Font locali.** Il link a Google Fonts diventa `fonts/fonts.css`, con Instrument Sans e Instrument Serif dai pacchetti Fontsource (stessi caratteri, licenza OFL).
-3. **Condivisione con link nascosta** (vedi sotto) e la frase della pagina iniziale "a meno che tu non scelga di condividerli" tolta.
-4. **Solo sito:** statistiche di visita tolte; invito all'altra lingua, collegamenti alle pagine per professione, all'app per computer, a privacy e termini e selettore di lingua tolti; la firma "Una trovata di 16bit" resta come testo senza link (un link porterebbe via la finestra dell'app).
-5. **Aspetto da app** (vedi sotto).
-6. File locali citati dalla pagina (icone, manifest, ecc.) copiati se esistono.
+1. **pdf.js e font.** Li serve già il sito stesso (`/vendor/pdfjs/<versione>/` e `/fonts/`, copiati da `../scripts/build.mjs` dai pacchetti npm `pdfjs-dist` e Fontsource del `package.json` nella radice): l'app copia le stesse cartelle in `dist/`. Serve quindi `npm ci` (o `npm install`) anche nella radice del repository.
+2. **Condivisione con link nascosta** (vedi sotto) e la frase della pagina iniziale "a meno che tu non scelga di condividerli" tolta.
+3. **Solo sito:** statistiche di visita tolte; invito all'altra lingua, collegamenti alle pagine per professione, all'app per computer, a privacy e termini e selettore di lingua tolti; la firma "Una trovata di 16bit" resta come testo senza link (un link porterebbe via la finestra dell'app).
+4. **Aspetto da app** (vedi sotto).
+5. File locali citati dalla pagina (icone, manifest, ecc.) copiati se esistono.
 
-Ogni sostituzione deve trovare il suo testo esattamente una volta: se la pagina cambia in quei punti, la build si ferma con un messaggio invece di produrre un'app che va in rete. Alla fine lo script elenca gli indirizzi di rete rimasti nella pagina (oggi nessuno).
+Ogni sostituzione deve trovare il suo testo esattamente una volta: se la pagina cambia in quei punti, la build si ferma con un messaggio invece di produrre un'app che va in rete. Alla fine, se nella pagina o in `fonts.css` resta un indirizzo di rete inatteso, la build si ferma con l'elenco.
 
 ## Aspetto da app
 
@@ -96,7 +95,7 @@ Download per gli utenti: https://raffronto.app/scarica (in inglese `/en/download
 
 - **Rilascio:** si aggiorna `version` in `src-tauri/tauri.conf.json` (e per ordine in `package.json` e `Cargo.toml`), poi si crea e si invia il tag: `git tag v0.2.0 && git push origin v0.2.0`. Il flusso controlla che il tag corrisponda alla versione, crea una release in bozza, ci carica i file di tutte le build e la pubblica solo se sono andate tutte bene.
 - **Prova senza rilascio:** Actions > Desktop > Run workflow. I file restano come artefatti dell'esecuzione (anche nei rilasci).
-- La pagina si genera dalla radice del repository (`scripts/build.mjs`, `src/`) con Node 22; pdf.js e i font vengono da `npm ci` in `desktop/`.
+- La pagina si genera dalla radice del repository (`scripts/build.mjs`, `src/`) con Node 22; pdf.js e i font vengono da `npm ci` nella radice, la CLI di Tauri da `npm ci` in `desktop/`.
 - Linux ARM64 è costruito su Ubuntu 24.04: l'AppImage richiede una glibc almeno di quella versione (per sistemi più vecchi si può passare a `ubuntu-22.04-arm`).
 
 ### Firma (oggi non firmata)

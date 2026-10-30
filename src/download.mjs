@@ -1,11 +1,13 @@
 // Desktop app download page, site only. scripts/build.mjs puts it in src/legal.html (same header and footer as the
-// privacy policy) and writes site/<path>/index.html; `link` is the label in the footers. Files come from the latest
-// GitHub release, under the fixed names uploaded by .github/workflows/desktop.yml (publish job).
+// privacy policy) and writes site/<path>/index.html; `link` is the label in the footers. Files are the ones of the latest
+// GitHub release, under the fixed names uploaded by .github/workflows/desktop.yml (publish job), but the links point
+// to /download/<name> on the site: the Worker (cloudflare/src/index.ts) fetches them from GitHub, so GitHub never
+// receives the visitor's address. Only "what's new" links to the release page on GitHub.
 // The script below picks the visitor's system and shows its block (.pick[data-for]) and note (.first-run [data-for]);
 // without it, or on phones, tablets and unknown systems, the list of all versions does the job.
 
 const RELEASES = 'https://github.com/16bitsrl/raffronto/releases';
-const file = name => `${RELEASES}/latest/download/Raffronto-${name}`;
+const file = name => `/download/Raffronto-${name}`;
 
 // every file, by system: key, file name, label per language
 const files = {

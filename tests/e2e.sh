@@ -99,6 +99,8 @@ URL=$URL zsh ${0:A:h}/english.sh || fail=1
 URL=$URL zsh ${0:A:h}/legal.sh || fail=1
 # page addresses without a trailing slash, and the redirect from the old ones: see tests/urls.sh
 URL=$URL zsh ${0:A:h}/urls.sh || fail=1
+# no third party gets the visitor's address (fonts, pdf.js and app downloads from the site itself): see tests/privacy-network.sh
+URL=$URL zsh ${0:A:h}/privacy-network.sh || fail=1
 # desktop app download page, picked for the visitor's system: see tests/download.sh
 URL=$URL zsh ${0:A:h}/download.sh || fail=1
 exit $fail

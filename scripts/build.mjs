@@ -4,8 +4,8 @@
 // src/index.html is written in English. Texts in the markup are {{English text}}, texts in the script are
 // tx('English text'); src/strings.it.json translates them. A text without its Italian translation stops the
 // build, so the Italian site never shows English by accident. {{@name}} are the slots filled per page.
-import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, copyFileSync, existsSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pages, languages } from '../src/pages.mjs';
 import { legal, legalUi } from '../src/legal.mjs';
@@ -17,6 +17,19 @@ const ORIGIN = 'https://raffronto.app';
 const LANGS = ['it', 'en'];
 
 const template = readFileSync(join(src, 'index.html'), 'utf8');
+
+// pdf.js and the fonts come from the npm packages pinned in package.json (npm ci in the project root) and are
+// served by the site itself, so no third party gets the visitor's address. pdf.js lives under its version
+// (/vendor/pdfjs/<version>/, named in index.html and sw.js): a new version is a new address, never a stale copy.
+const modules = join(root, 'node_modules');
+if (!existsSync(join(modules, 'pdfjs-dist/package.json'))) fail('missing node_modules: run "npm ci" in the project root first');
+const pdfjsVersion = JSON.parse(readFileSync(join(modules, 'pdfjs-dist/package.json'), 'utf8')).version;
+const PDFJS = `/vendor/pdfjs/${pdfjsVersion}/`;
+for (const f of ['index.html', 'sw.js']) {
+  if (!readFileSync(join(src, f), 'utf8').includes(PDFJS)) fail(`src/${f} does not load pdf.js from ${PDFJS}: align it with "pdfjs-dist" in package.json`);
+}
+// Instrument Sans (variable, 400 to 700) and Instrument Serif (regular and italic), woff2 only
+const FONTS = [['@fontsource-variable/instrument-sans', 'wght.css'], ['@fontsource/instrument-serif', '400.css'], ['@fontsource/instrument-serif', '400-italic.css']];
 const dict = { it: JSON.parse(readFileSync(join(src, 'strings.it.json'), 'utf8')), en: {} };
 
 // every translatable text of the template
@@ -132,4 +145,35 @@ ${LANGS.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${url(pa
 `);
 
 for (const f of ['sw.js', 'robots.txt', 'icons', 'social.png', 'social-en.png', 'screens']) cpSync(join(src, f), join(out, f), { recursive: true });
+
+// pdf.js (only the files the page loads) and the fonts, each with its license
+mkdirSync(join(out, PDFJS), { recursive: true });
+for (const f of ['build/pdf.min.mjs', 'build/pdf.worker.min.mjs', 'LICENSE']) copyFileSync(join(modules, 'pdfjs-dist', f), join(out, PDFJS, basename(f)));
+mkdirSync(join(out, 'fonts'));
+let css = '/* Instrument Sans and Instrument Serif, SIL Open Font License 1.1 (LICENSE-*.txt here), from Fontsource */\n';
+for (const [pkg, file] of FONTS) {
+  const dir = join(modules, pkg);
+  css += '\n' + readFileSync(join(dir, file), 'utf8')
+    .replace(/,\s*url\(\.\/files\/[^)]+\.woff\) format\('woff'\)/g, '')
+    .replace(/url\(\.\/files\/([^)]+\.woff2)\)/g, (_, name) => {
+      copyFileSync(join(dir, 'files', name), join(out, 'fonts', name));
+      return `url(${name})`;
+    });
+  copyFileSync(join(dir, 'LICENSE'), join(out, 'fonts', `LICENSE-${basename(pkg)}.txt`));
+}
+css = css.replaceAll("'Instrument Sans Variable'", "'Instrument Sans'");
+if (/url\((?!instrument-[\w-]+\.woff2\))/.test(css)) fail('fonts.css: unexpected font source, only the woff2 files copied next to it are allowed');
+writeFileSync(join(out, 'fonts/fonts.css'), css);
+// every /fonts/ and /vendor/ file named by the pages or the service worker must exist
+for (const f of ['index.html', 'legal.html', 'sw.js']) {
+  for (const [ref] of readFileSync(join(src, f), 'utf8').matchAll(/\/(?:fonts|vendor)\/[\w.\/-]+\.\w+/g)) {
+    if (!existsSync(join(out, ref))) fail(`src/${f} names ${ref}, which is not in site/`);
+  }
+}
+// Cloudflare cache rules for the static files: pdf.js never changes at its versioned address
+writeFileSync(join(out, '_headers'), `/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+  Cache-Control: public, max-age=604800
+`);
 console.log(`build: site/ ready (${(pages.length + docs.length) * LANGS.length} pages)`);

@@ -150,9 +150,99 @@ async function share(req: Request, env: Env): Promise<Response> {
 	return json(201, { id, expires });
 }
 
+// GET|HEAD /download/<fixed name>   the desktop app installer of the latest GitHub release
+//
+// The download page (src/download.mjs) links here instead of GitHub, so GitHub never sees the visitor: the Worker
+// fetches the file itself and streams it back. Only the fixed names uploaded by .github/workflows/desktop.yml
+// (publish job) are allowed. releases/latest/download/<name> redirects to releases/download/<tag>/<name>: that
+// address names the release, so it is the key of the copy kept in the Cloudflare cache, and a new release is
+// fetched from GitHub once, then served from the cache.
+const RELEASES = "https://github.com/16bitsrl/raffronto/releases";
+const DOWNLOADS: Record<string, string> = {
+	"Raffronto-mac-arm64.dmg": "application/x-apple-diskimage",
+	"Raffronto-mac-x64.dmg": "application/x-apple-diskimage",
+	"Raffronto-windows-x64-setup.exe": "application/vnd.microsoft.portable-executable",
+	"Raffronto-windows-arm64-setup.exe": "application/vnd.microsoft.portable-executable",
+	"Raffronto-windows-x64.msi": "application/x-msi",
+	"Raffronto-linux-x64.AppImage": "application/vnd.appimage",
+	"Raffronto-linux-arm64.AppImage": "application/vnd.appimage",
+	"Raffronto-linux-x64.deb": "application/vnd.debian.binary-package",
+	"Raffronto-linux-arm64.deb": "application/vnd.debian.binary-package",
+};
+const DOWNLOAD_HEADERS = {
+	"X-Content-Type-Options": "nosniff",
+	"X-Robots-Tag": "noindex",
+};
+
+async function download(req: Request, name: string, ctx: ExecutionContext): Promise<Response> {
+	const type = Object.hasOwn(DOWNLOADS, name) ? DOWNLOADS[name] : undefined;
+	if (!type) return new Response("Not found\n", { status: 404, headers: { ...DOWNLOAD_HEADERS, "Content-Type": "text/plain; charset=utf-8" } });
+	if (req.method !== "GET" && req.method !== "HEAD") {
+		return new Response(null, { status: 405, headers: { ...DOWNLOAD_HEADERS, Allow: "GET, HEAD" } });
+	}
+	// which release is the latest: GitHub answers with a redirect to the file of that release
+	const latest = await fetch(`${RELEASES}/latest/download/${name}`, { method: "HEAD", redirect: "manual" });
+	const pinned = latest.headers.get("Location");
+	if (!pinned || !pinned.startsWith(`${RELEASES}/download/`)) return unavailable();
+
+	const cache = caches.default;
+	const key = new Request(pinned);
+	let hit = await cache.match(key);
+	if (!hit) {
+		const res = await fetch(pinned);
+		if (!res.ok || !res.body) return unavailable();
+		const length = res.headers.get("Content-Length");
+		const stored = new Response(res.body, {
+			headers: {
+				"Content-Type": type,
+				...(length ? { "Content-Length": length } : {}),
+				// kept by the cache for 30 days; the release behind this key never changes
+				"Cache-Control": "public, max-age=2592000",
+			},
+		});
+		if (req.method === "HEAD") {
+			ctx.waitUntil(cache.put(key, stored));
+			return send(req, name, type, length, null);
+		}
+		// the whole file goes into the cache first, then the visitor gets it from there: one read from GitHub,
+		// and the file is never held in the Worker's memory. Where the cache does not keep it (workers.dev),
+		// the file is streamed straight from GitHub instead.
+		await cache.put(key, stored);
+		hit = await cache.match(key);
+		if (!hit) {
+			const again = await fetch(pinned);
+			if (!again.ok || !again.body) return unavailable();
+			return send(req, name, type, again.headers.get("Content-Length"), again.body);
+		}
+	}
+	return send(req, name, type, hit.headers.get("Content-Length"), hit.body);
+}
+
+function send(req: Request, name: string, type: string, length: string | null, body: ReadableStream | null): Response {
+	if (req.method === "HEAD") body?.cancel();
+	return new Response(req.method === "HEAD" ? null : body, {
+		headers: {
+			...DOWNLOAD_HEADERS,
+			"Content-Type": type,
+			...(length ? { "Content-Length": length } : {}),
+			"Content-Disposition": `attachment; filename="${name}"`,
+			// the address stays the same across releases: browsers and proxies keep it only briefly
+			"Cache-Control": "public, max-age=300",
+		},
+	});
+}
+
+const unavailable = () =>
+	new Response("Download unavailable, please try again later.\n", {
+		status: 502,
+		headers: { ...DOWNLOAD_HEADERS, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store", "Retry-After": "60" },
+	});
+
 export default {
-	async fetch(req, env) {
-		if (new URL(req.url).pathname === "/api/share") return share(req, env);
+	async fetch(req, env, ctx) {
+		const path = new URL(req.url).pathname;
+		if (path === "/api/share") return share(req, env);
+		if (path.startsWith("/download/")) return download(req, path.slice("/download/".length), ctx);
 		return fail(404, "not found");
 	},
 } satisfies ExportedHandler<Env>;

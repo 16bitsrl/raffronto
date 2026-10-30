@@ -1,0 +1,14 @@
+{
+  "name": "raffronto-site",
+  "private": true,
+  "type": "module",
+  "description": "Builds the website (scripts/build.mjs); pdf.js and the fonts are copied from these packages into site/.",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "@fontsource-variable/instrument-sans": "5.3.0",
+    "@fontsource/instrument-serif": "5.3.0",
+    "pdfjs-dist": "4.10.38"
+  }
+}

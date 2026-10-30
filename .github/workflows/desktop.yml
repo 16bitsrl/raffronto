@@ -3,7 +3,8 @@
 #   The tag must match "version" in desktop/src-tauri/tauri.conf.json.
 # - Manual run (workflow_dispatch): builds everything and keeps the installers as workflow artifacts, no release.
 # The page is generated from the repository root (scripts/build.mjs, src/) by desktop/scripts/prepare-web.mjs,
-# which Tauri runs before the build (beforeBuildCommand); pdf.js and the fonts come from desktop/ npm packages.
+# which Tauri runs before the build (beforeBuildCommand); pdf.js and the fonts come from the root package.json,
+# copied into the site by scripts/build.mjs (so the root needs its own npm ci).
 # Builds are unsigned for now: see desktop/README.md ("Build su GitHub") for the secrets that turn on signing.
 name: Desktop
 
@@ -91,7 +92,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: desktop/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            desktop/package-lock.json
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -108,7 +111,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
 
-      - name: npm ci
+      - name: npm ci (site build)
+        run: npm ci
+
+      - name: npm ci (desktop)
         working-directory: desktop
         run: npm ci
 

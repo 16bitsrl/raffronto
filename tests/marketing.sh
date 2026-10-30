@@ -6,7 +6,11 @@ set -u
 URL=${URL:-http://diff-tracker.test/}
 FX=${0:A:h}/fixtures
 S="raff-mkt-$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c 6)"
-playwright-cli -s=$S open $URL >/dev/null
+# the statistics check rewrites the page in the browser (route), and Chromium then treats it as a public page: on the
+# local site (127.0.0.1) its own fonts, images and pdf.js would be blocked as requests to the local network
+TMP=$(mktemp -d /tmp/raffronto-mkt-test.XXXXXX)
+print -r -- '{"browser":{"launchOptions":{"args":["--disable-features=LocalNetworkAccessChecks"]}}}' > $TMP/pw.json
+playwright-cli -s=$S open --config=$TMP/pw.json $URL >/dev/null
 fail=0
 run() { # name js-returning-'ok'
   local out
@@ -34,4 +38,5 @@ run "statistiche: visite e confronti contati, mai la chiave di un link condiviso
   "const ctx = page.context(); const sent = []; const host = new URL('$URL').hostname; await ctx.route('$URL', async r => { const res = await r.fetch(); r.fulfill({ response: res, body: (await res.text()).replace('data-domains=\"raffronto.app\"', 'data-domains=\"' + host + '\"') }); }); await ctx.route('https://stats.16bit.cloud/api/e', r => { sent.push(r.request().postData()); r.fulfill({ status: 200, contentType: 'application/json', body: '{}' }); }); await ctx.route('**/api/share?*', async r => { await new Promise(ok => setTimeout(ok, 3000)); r.fulfill({ status: 404, contentType: 'application/json', body: '{\"error\":\"not found\"}' }); }); const key = 'segretissimachiavedeltestnonvamaiinviata0001'.slice(0, 43); try { const tag = ((await (await page.request.get('$URL')).text()).match(/<script[^>]*stats\.16bit\.cloud[^>]*>/) || [''])[0]; await page.goto('about:blank'); await page.goto('$URL#s=' + 'ab'.repeat(16) + '.' + key); await page.waitForTimeout(2000); await page.getByRole('button', { name: 'Ho capito' }).click({ timeout: 5000 }); const ins = page.locator('.drop input'); await ins.nth(0).setInputFiles('$FX/agreement-v1.pdf'); await ins.nth(1).setInputFiles('$FX/agreement-v2.pdf'); await page.waitForFunction(() => !document.querySelector('#ws').hidden, null, { timeout: 30000 }); await page.waitForTimeout(1500); const ev = sent.map(s => JSON.parse(s)); const leak = sent.some(s => s.includes(key) || s.includes('#s=')); const views = ev.filter(e => !e.payload.name).length; const compare = ev.find(e => e.payload.name === 'compare'); const ok = /data-website-id=\"08ee6714-48bc-4c02-8be2-c13917b43212\"/.test(tag) && /data-exclude-hash=\"true\"/.test(tag) && views >= 1 && compare && compare.payload.data?.kind === 'pdf' && !leak; return ok ? 'ok' : JSON.stringify({ views, compare, leak, sent: sent.slice(0, 4) }); } finally { await ctx.unrouteAll(); }"
 
 playwright-cli -s=$S close >/dev/null
+rm -rf $TMP
 exit $fail
