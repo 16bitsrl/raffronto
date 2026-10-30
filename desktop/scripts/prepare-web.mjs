@@ -93,7 +93,9 @@ const APP_STYLE = `
 .app .app-title { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1.15; letter-spacing: -.01em; margin: 0 0 6px; }
 .app .app-hint { margin: 0 0 24px; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
 .app .drop { min-height: 260px; }
-.app .credit { max-width: none; margin: 0; padding: 20px 0 18px; border: 0; justify-content: center; font-size: 12px; color: var(--faint); }
+.app .credit { max-width: none; margin: 0; padding: 20px 0 18px; border: 0; justify-content: center; }
+.app .credit .end { margin: 0; justify-content: center; }
+.app .credit { font-size: 12px; color: var(--faint); }
 .app .credit .by img { height: 14px; }
 `;
 // runs in <head>: the classes are there before the first paint; the drag region is the top bar, minus

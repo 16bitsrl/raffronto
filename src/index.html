@@ -189,8 +189,10 @@ button { font: inherit; color: inherit; }
 }
 .credit .for { display: flex; flex-wrap: wrap; gap: 4px 14px; }
 .credit .for a[aria-current] { color: var(--ink); text-decoration: none; }
-.credit .end { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.credit .end { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-end; gap: 4px 14px; margin-left: auto; }
 .credit .end > a { white-space: nowrap; }
+/* on narrow screens the links stay on the left and the credit closes the footer on the right */
+@media (max-width: 700px) { .credit .end { flex-basis: 100%; justify-content: flex-start; } .credit .end .by { margin-left: auto; } }
 /* the other language, offered as a quiet pill above the title */
 .lang-hint { max-width: 980px; width: 100%; margin: 0 0 22px; display: flex; }
 .lang-hint[hidden] { display: none; }
