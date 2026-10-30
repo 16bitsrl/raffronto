@@ -73,6 +73,7 @@ function render(page, lang) {
       `<link rel="alternate" hreflang="x-default" href="${url(page.en.path)}">`].join('\n'),
     jsonld: JSON.stringify(jsonld).replaceAll('<', '\\u003c'),
     manifest: lang === 'it' ? '/manifest.webmanifest' : `/${lang}/manifest.webmanifest`,
+    home: pages[0][lang].path,
     hero: `<h1>${p.h1}</h1>\n    <p class="lede">${p.lede}</p>`,
     sections, professions: nav,
     langHint: `<a href="${page[o].path}" hreflang="${o}" lang="${o}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>${languages[o].hint}<span class="go" aria-hidden="true">→</span></a>`,

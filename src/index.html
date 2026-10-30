@@ -93,7 +93,7 @@ button { font: inherit; color: inherit; }
   border-bottom: 1px solid var(--line);
   position: relative; z-index: 5;
 }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 650; font-size: 16px; letter-spacing: -.01em; cursor: pointer; background: none; border: 0; padding: 4px; }
+.brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; font-weight: 650; font-size: 16px; letter-spacing: -.01em; cursor: pointer; background: none; border: 0; padding: 4px; }
 .brand svg { display: block; color: var(--brand); }
 .brand em { font-family: var(--display); font-style: normal; font-weight: 400; font-size: 21px; letter-spacing: 0; }
 .spacer { flex: 1; }
@@ -629,12 +629,12 @@ kbd { font: 600 11px var(--ui); border: 1px solid var(--line); border-bottom-wid
 </head>
 <body>
 <header class="topbar">
-  <button class="brand" id="home" title="{{New comparison}}">
+  <a class="brand" id="home" href="{{@home}}" title="{{New comparison}}">
     <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
       <path fill="currentColor" d="M25 17V8H6V56H25V43H21V52H10V12H21V17Z M39 47V56H58V8H39V21H43V12H54V52H43V47Z M17 23H24C36 23 31 35 43 35H47V43H42C28 43 33 31 23 31H17Z"/>
     </svg>
     <em>Raffronto</em>
-  </button>
+  </a>
   <div class="spacer"></div>
   <div class="nav" id="nav" hidden>
     <button class="ibtn" id="prev" title="{{Previous change (K)}}" aria-label="{{Previous change}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg></button>
@@ -2014,7 +2014,8 @@ function showWorkspace() {
   $('#landing').hidden = true; $('#ws').hidden = false;
   for (const id of ['nav', 'sim', 'sep1', 'zoom', 'newBtn', 'panelBtn', 'printBtn']) $('#' + id).hidden = false;
 }
-$('#home').addEventListener('click', () => { if (S.sides[0]) showLanding(); });
+// the logo leads to the home page of the language; with documents loaded, or in the desktop app, it goes back to the start screen instead
+$('#home').addEventListener('click', e => { if (S.sides[0] || document.documentElement.classList.contains('app')) { e.preventDefault(); if (S.sides[0]) showLanding(); } });
 $('#newBtn').addEventListener('click', () => { pending[0] = pending[1] = null; S.sides = [null, null]; showLanding(); paintDrops(); });
 
 // =====================================================================
