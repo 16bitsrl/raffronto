@@ -220,5 +220,6 @@
   "An encrypted link, if you need one": "Un link cifrato, se serve",
   "Send the comparison to someone with a link: it is encrypted in your browser and stops working after 7 days.": "Manda il confronto a qualcuno con un link: viene cifrato nel tuo browser e smette di funzionare dopo 7 giorni.",
   "Works offline too": "Anche senza connessione",
-  "Install it as an app: after the first visit it opens and compares even without a connection.": "Installalo come app: dopo la prima visita si apre e confronta anche senza rete."
+  "Install it as an app: after the first visit it opens and compares even without a connection.": "Installalo come app: dopo la prima visita si apre e confronta anche senza rete.",
+  "There is also an app for Mac, Windows and Linux.": "C’è anche l’app per Mac, Windows e Linux."
 }

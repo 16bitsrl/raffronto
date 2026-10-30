@@ -189,7 +189,8 @@ button { font: inherit; color: inherit; }
 }
 .credit .for { display: flex; flex-wrap: wrap; gap: 4px 14px; }
 .credit .for a[aria-current] { color: var(--ink); text-decoration: none; }
-.credit .end { display: flex; align-items: baseline; gap: 14px; }
+.credit .end { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.credit .end > a { white-space: nowrap; }
 .lang-hint { max-width: 980px; width: 100%; margin: 0 0 18px; font-size: 13.5px; }
 .lang-hint a { color: var(--focus); text-underline-offset: 3px; }
 .uses { max-width: 980px; width: 100%; margin-top: 72px; }
@@ -220,6 +221,8 @@ button { font: inherit; color: inherit; }
 .shot:not(.wide) figcaption { margin-top: 16px; max-width: 46ch; }
 .promises { list-style: none; padding: 26px 0 0; margin: 64px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 32px; }
 .promises svg { width: 20px; height: 20px; color: var(--brand); margin-bottom: 12px; display: block; }
+.promises a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.promises a:hover { text-decoration-color: currentColor; }
 @media (max-width: 720px) {
   .features { margin-top: 64px; }
   .shot.wide figcaption, .shots, .promises { grid-template-columns: minmax(0, 1fr); }
@@ -688,7 +691,7 @@ kbd { font: 600 11px var(--ui); border: 1px solid var(--line); border-bottom-wid
     <ul class="promises">
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><h3>{{They stay on your computer}}</h3><p>{{Your documents are read and compared in your browser, and never sent anywhere unless you choose to share them.}}</p></li>
       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg><h3>{{An encrypted link, if you need one}}</h3><p>{{Send the comparison to someone with a link: it is encrypted in your browser and stops working after 7 days.}}</p></li>
-      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M9 10.5l2 2 4-4"/></svg><h3>{{Works offline too}}</h3><p>{{Install it as an app: after the first visit it opens and compares even without a connection.}}</p></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M9 10.5l2 2 4-4"/></svg><h3>{{Works offline too}}</h3><p>{{Install it as an app: after the first visit it opens and compares even without a connection.}} <a href="{{@download}}">{{There is also an app for Mac, Windows and Linux.}}</a></p></li>
     </ul>
   </section>
   <footer class="credit">

@@ -1,5 +1,5 @@
 // Privacy policy and terms of use, in their language. scripts/build.mjs puts each one in src/legal.html and
-// writes site/<path>index.html; `link` is the label in the footer of the app. Keep them short and true to how
+// writes site/<path>/index.html; `link` is the label in the footer of the app. Keep them short and true to how
 // the app works (src/index.html, cloudflare/src/index.ts, docs/README.md): update them when that changes.
 
 const updated = { it: '30 ottobre 2026', en: '30 October 2026' };
@@ -13,7 +13,7 @@ export const legal = [
   {
     id: 'privacy',
     it: {
-      path: '/privacy/', link: 'Privacy',
+      path: '/privacy', link: 'Privacy',
       title: 'Informativa sulla privacy',
       description: 'Come Raffronto tratta i tuoi dati: i documenti restano nel tuo browser, i link condivisi sono cifrati, le statistiche non usano cookie.',
       updated: updated.it,
@@ -35,8 +35,9 @@ export const legal = [
 <ul>
 <li><b>Cloudflare</b> ospita il sito sulla sua rete mondiale; le copie cifrate dei link condivisi sono conservate in Europa occidentale. Come ogni servizio di hosting riceve l’indirizzo IP e i dati tecnici delle richieste e li tiene nei suoi registri per pochi giorni, per sicurezza e funzionamento.</li>
 <li><b>Google Fonts</b> fornisce i caratteri della pagina e <b>jsDelivr</b> il programma che legge i PDF. Il browser li scarica direttamente da loro, che quindi ricevono il tuo indirizzo IP. Non ricevono i tuoi documenti.</li>
+<li><b>GitHub</b> ospita i file delle app per computer: se ne scarichi una, la scarichi direttamente da GitHub, che riceve il tuo indirizzo IP.</li>
 </ul>
-<p>Questi fornitori possono trattare l’indirizzo IP anche fuori dallo Spazio economico europeo. Cloudflare e Google aderiscono al Data Privacy Framework UE-USA, riconosciuto adeguato dalla Commissione europea; jsDelivr distribuisce i file attraverso reti di fornitori in tutto il mondo.</p>
+<p>Questi fornitori possono trattare l’indirizzo IP anche fuori dallo Spazio economico europeo. Cloudflare, Google e GitHub aderiscono al Data Privacy Framework UE-USA, riconosciuto adeguato dalla Commissione europea; jsDelivr distribuisce i file attraverso reti di fornitori in tutto il mondo.</p>
 
 <h2>Cosa resta sul tuo dispositivo</h2>
 <p>Nessun cookie. Il browser ricorda il tema chiaro o scuro, la lingua che hai scelto e se hai già visto la spiegazione delle revisioni, e conserva una copia dell’app per usarla anche senza connessione. Puoi cancellare tutto dalle impostazioni del browser.</p>
@@ -46,7 +47,7 @@ export const legal = [
 `,
     },
     en: {
-      path: '/en/privacy/', link: 'Privacy',
+      path: '/en/privacy', link: 'Privacy',
       title: 'Privacy policy',
       description: 'How Raffronto handles your data: documents stay in your browser, shared links are encrypted, statistics use no cookies.',
       updated: updated.en,
@@ -68,8 +69,9 @@ export const legal = [
 <ul>
 <li><b>Cloudflare</b> hosts the site on its worldwide network; the encrypted copies of shared links are stored in Western Europe. Like any hosting service it receives your IP address and the technical details of each request, and keeps them in its logs for a few days for security and operation.</li>
 <li><b>Google Fonts</b> provides the typefaces of the page and <b>jsDelivr</b> the program that reads PDFs. Your browser downloads them directly from them, so they receive your IP address. They do not receive your documents.</li>
+<li><b>GitHub</b> hosts the files of the desktop app: if you download it, you download it directly from GitHub, which receives your IP address.</li>
 </ul>
-<p>These providers may process your IP address outside the European Economic Area. Cloudflare and Google take part in the EU-US Data Privacy Framework, which the European Commission recognises as adequate; jsDelivr delivers its files through networks of providers worldwide.</p>
+<p>These providers may process your IP address outside the European Economic Area. Cloudflare, Google and GitHub take part in the EU-US Data Privacy Framework, which the European Commission recognises as adequate; jsDelivr delivers its files through networks of providers worldwide.</p>
 
 <h2>What stays on your device</h2>
 <p>No cookies. Your browser remembers the light or dark theme, the language you chose and whether you have already seen the explanation of tracked changes, and keeps a copy of the app so it also works offline. You can clear all of it from your browser settings.</p>
@@ -82,7 +84,7 @@ export const legal = [
   {
     id: 'terms',
     it: {
-      path: '/termini/', link: 'Termini',
+      path: '/termini', link: 'Termini',
       title: 'Termini di utilizzo',
       description: 'Le condizioni per usare Raffronto, il servizio gratuito di 16bit per confrontare documenti Word e PDF.',
       updated: updated.it,
@@ -103,11 +105,11 @@ export const legal = [
 <p>Gli aggiornamenti di questi termini valgono per l’uso successivo alla pubblicazione e non cambiano le condizioni dei link già creati; la data in alto indica la versione in vigore. Si applica la legge italiana, senza togliere ai consumatori le tutele inderogabili del paese in cui vivono. Per i consumatori resta competente il giudice previsto dalle norme a loro tutela; negli altri casi valgono le regole ordinarie.</p>
 
 <h2>Contatti</h2>
-<p>Scrivi a ${email}. Per come trattiamo i dati, leggi l’<a href="/privacy/">informativa sulla privacy</a>.</p>
+<p>Scrivi a ${email}. Per come trattiamo i dati, leggi l’<a href="/privacy">informativa sulla privacy</a>.</p>
 `,
     },
     en: {
-      path: '/en/terms/', link: 'Terms',
+      path: '/en/terms', link: 'Terms',
       title: 'Terms of use',
       description: 'The conditions for using Raffronto, the free service by 16bit for comparing Word and PDF documents.',
       updated: updated.en,
@@ -128,7 +130,7 @@ export const legal = [
 <p>Updates to these terms apply to use after they are published and do not change the conditions of links already created; the date at the top shows the version in force. Italian law applies, without depriving consumers of the mandatory protections of the country where they live. Consumers keep the courts available under the rules that protect them; in other cases the ordinary rules apply.</p>
 
 <h2>Contact</h2>
-<p>Write to ${email}. For how we handle data, read the <a href="/en/privacy/">privacy policy</a>.</p>
+<p>Write to ${email}. For how we handle data, read the <a href="/en/privacy">privacy policy</a>.</p>
 `,
     },
   },

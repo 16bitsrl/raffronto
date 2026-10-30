@@ -1,5 +1,5 @@
 // The pages of the site: the same app, with its own address, title, opening and sections for each language.
-// scripts/build.mjs turns every page into site/<path>index.html. Texts here are already in their language.
+// scripts/build.mjs turns every page into site/<path>/index.html. Texts here are already in their language.
 
 export const pages = [
   {
@@ -12,7 +12,7 @@ export const pages = [
       lede: 'Carica l’originale e la nuova versione di un contratto, di uno statuto o di qualsiasi documento Word o PDF. Le differenze compaiono affiancate, pagina per pagina, collegate tra loro.',
     },
     en: {
-      path: '/en/',
+      path: '/en',
       title: 'Raffronto · compare two documents',
       description: 'Every change, even the ones nobody told you about. Compare two versions of a Word or PDF document and see every difference side by side, page by page. Your files stay on your computer.',
       h1: 'See what <del>stayed the same</del> <ins>changed</ins> between two versions.',
@@ -22,7 +22,7 @@ export const pages = [
   {
     id: 'lawyers',
     it: {
-      path: '/avvocati/',
+      path: '/avvocati',
       nav: 'Avvocati',
       title: 'Confrontare due versioni di un contratto · Raffronto per avvocati',
       description: 'Confronta la bozza che hai mandato con quella che ti è tornata, in Word o PDF: ogni modifica affiancata ed evidenziata, anche senza revisioni attive. Gratuito, i documenti restano sul tuo computer.',
@@ -36,7 +36,7 @@ export const pages = [
       ],
     },
     en: {
-      path: '/en/lawyers/',
+      path: '/en/lawyers',
       nav: 'Lawyers',
       title: 'Compare two versions of a contract · Raffronto for lawyers',
       description: 'Compare the draft you sent with the one that came back, in Word or PDF: every change side by side and highlighted, even without tracked changes. Free, your documents stay on your computer.',
@@ -53,7 +53,7 @@ export const pages = [
   {
     id: 'notaries',
     it: {
-      path: '/notai/',
+      path: '/notai',
       nav: 'Notai',
       title: 'Confrontare bozza e atto, statuti prima e dopo · Raffronto per notai',
       description: 'Confronta la bozza condivisa con le parti e il testo definitivo, lo statuto vigente e quello modificato, il PDF firmato e il Word di partenza. Gratuito, i documenti restano sul tuo computer.',
@@ -67,7 +67,7 @@ export const pages = [
       ],
     },
     en: {
-      path: '/en/notaries/',
+      path: '/en/notaries',
       nav: 'Notaries',
       title: 'Compare a draft with the final deed · Raffronto for notaries',
       description: 'Compare the draft shared with the parties and the final text, the current bylaws and the amended ones, the signed PDF and the original Word file. Free, your documents stay on your computer.',
@@ -84,7 +84,7 @@ export const pages = [
   {
     id: 'tenders',
     it: {
-      path: '/gare-e-appalti/',
+      path: '/gare-e-appalti',
       nav: 'Gare e appalti',
       title: 'Confrontare bandi, capitolati e rettifiche · Raffronto per gare e appalti',
       description: 'Confronta disciplinare, capitolato o schema di contratto con la versione rettificata e trova ogni riga cambiata, anche Word contro PDF. Gratuito, i documenti restano sul tuo computer.',
@@ -98,7 +98,7 @@ export const pages = [
       ],
     },
     en: {
-      path: '/en/tenders/',
+      path: '/en/tenders',
       nav: 'Tenders',
       title: 'Compare tender documents and amendments · Raffronto for tenders',
       description: 'Compare tender specifications or the draft contract with the amended version and find every line that changed, even Word against PDF. Free, your documents stay on your computer.',
@@ -115,7 +115,7 @@ export const pages = [
   {
     id: 'translators',
     it: {
-      path: '/traduttori/',
+      path: '/traduttori',
       nav: 'Traduttori',
       title: 'Trovare cosa è cambiato nel testo da tradurre · Raffronto per traduttori',
       description: 'Confronta la vecchia e la nuova versione del testo originale e traduci solo quello che è cambiato, oppure vedi cosa ha cambiato il revisore. Gratuito, i testi restano sul tuo computer.',
@@ -129,7 +129,7 @@ export const pages = [
       ],
     },
     en: {
-      path: '/en/translators/',
+      path: '/en/translators',
       nav: 'Translators',
       title: 'Find what changed in the text to translate · Raffronto for translators',
       description: 'Compare the old and the new version of the source text and translate only what changed, or see what the reviewer changed. Free, your texts stay on your computer.',

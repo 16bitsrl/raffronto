@@ -32,7 +32,7 @@ Lo script adatta la copia così:
 1. **pdf.js locale.** Gli indirizzi `https://cdn.jsdelivr.net/npm/pdfjs-dist@<versione>/build/` diventano `./vendor/pdfjs/`, con i file presi dal pacchetto npm `pdfjs-dist`. Se la versione nella pagina cambia, la build si ferma e chiede di allineare `pdfjs-dist` in `package.json` (poi `npm install`).
 2. **Font locali.** Il link a Google Fonts diventa `fonts/fonts.css`, con Instrument Sans e Instrument Serif dai pacchetti Fontsource (stessi caratteri, licenza OFL).
 3. **Condivisione con link nascosta** (vedi sotto) e la frase della pagina iniziale "a meno che tu non scelga di condividerli" tolta.
-4. **Solo sito:** statistiche di visita tolte; invito all'altra lingua, collegamenti alle pagine per professione e selettore di lingua tolti; la firma "Una trovata di 16bit" resta come testo senza link (un link porterebbe via la finestra dell'app).
+4. **Solo sito:** statistiche di visita tolte; invito all'altra lingua, collegamenti alle pagine per professione, all'app per computer, a privacy e termini e selettore di lingua tolti; la firma "Una trovata di 16bit" resta come testo senza link (un link porterebbe via la finestra dell'app).
 5. **Aspetto da app** (vedi sotto).
 6. File locali citati dalla pagina (icone, manifest, ecc.) copiati se esistono.
 
@@ -81,7 +81,7 @@ Come funziona: solo nell'app di sviluppo (mai in quella di release) la console d
 
 ## Build su GitHub e download
 
-Download per gli utenti: https://github.com/16bitsrl/raffronto/releases/latest
+Download per gli utenti: https://raffronto.app/scarica (in inglese `/en/download`), che propone il file giusto per il sistema di chi visita; tutte le release su https://github.com/16bitsrl/raffronto/releases/latest. Il job `publish` carica anche copie dei file con nomi fissi senza versione (`Raffronto-mac-arm64.dmg`, `Raffronto-mac-x64.dmg`, `Raffronto-windows-x64-setup.exe`, `Raffronto-windows-x64.msi`, `Raffronto-windows-arm64-setup.exe`, `Raffronto-linux-x64.AppImage`, `Raffronto-linux-x64.deb`, `Raffronto-linux-arm64.AppImage`, `Raffronto-linux-arm64.deb`), così la pagina punta sempre a `releases/latest/download/<nome>`; se ne manca uno la release non viene pubblicata.
 
 `.github/workflows/desktop.yml` (GitHub Actions, `tauri-apps/tauri-action@v1`) costruisce l'app su sei macchine:
 

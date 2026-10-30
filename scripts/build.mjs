@@ -9,6 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pages, languages } from '../src/pages.mjs';
 import { legal, legalUi } from '../src/legal.mjs';
+import { download } from '../src/download.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'src'), out = join(root, 'site');
@@ -63,7 +64,8 @@ function render(page, lang) {
     sections, professions: nav,
     langHint: `<a href="${page[o].path}" hreflang="${o}" lang="${o}">${languages[o].hint} →</a>`,
     langSwitch: `<a href="${page[o].path}" hreflang="${o}" lang="${o}">${languages[o].name}</a>`,
-    legal: legal.map(d => `<a href="${d[lang].path}">${d[lang].link}</a>`).join(' '),
+    legal: [download, ...legal].map(d => `<a href="${d[lang].path}">${d[lang].link}</a>`).join(' '),
+    download: download[lang].path,
   };
   let html = template.replace(/\{\{@(\w+)\}\}/g, (m, k) => {
     if (!(k in slots)) fail('unknown slot ' + m);
@@ -86,19 +88,22 @@ for (const page of pages) for (const lang of LANGS) {
   writeFileSync(join(dir, 'index.html'), render(page, lang));
 }
 
-// privacy policy and terms of use (src/legal.mjs): plain pages in src/legal.html, not the app
+// privacy policy and terms of use (src/legal.mjs) and the desktop app download page (src/download.mjs): plain
+// pages in src/legal.html, not the app
 const legalTemplate = readFileSync(join(src, 'legal.html'), 'utf8');
-for (const doc of legal) for (const lang of LANGS) {
+const docs = [download, ...legal];
+for (const doc of docs) for (const lang of LANGS) {
   const d = doc[lang], o = other(lang), ui = legalUi[lang];
   const slots = {
-    lang, title: attr(`${d.title} · Raffronto`), description: attr(d.description), url: url(d.path),
+    lang, title: attr(d.htmlTitle ?? `${d.title} · Raffronto`), description: attr(d.description), url: url(d.path),
     locale: languages[lang].locale,
     alternates: [...LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="${url(doc[l].path)}">`),
       `<link rel="alternate" hreflang="x-default" href="${url(doc.en.path)}">`].join('\n'),
     home: pages[0][lang].path, homeLabel: attr(ui.home), themeTitle: attr(ui.theme), themeLabel: attr(ui.themeLabel),
-    h1: d.title, updated: `${ui.updated} ${d.updated}`, body: d.body,
+    head: d.head ?? '', h1: d.title, body: d.body,
+    intro: d.lede ? `<p class="lede">${d.lede}</p>` : `<p class="updated">${ui.updated} ${d.updated}</p>`,
     footer: [`<a href="${pages[0][lang].path}">${ui.home}</a>`,
-      ...legal.filter(x => x !== doc).map(x => `<a href="${x[lang].path}">${x[lang].link}</a>`),
+      ...docs.filter(x => x !== doc).map(x => `<a href="${x[lang].path}">${x[lang].link}</a>`),
       `<a class="end" href="${doc[o].path}" hreflang="${o}" lang="${o}">${languages[o].name}</a>`].join('\n'),
   };
   const html = legalTemplate.replace(/\{\{@(\w+)\}\}/g, (m, k) => {
@@ -119,7 +124,7 @@ for (const lang of LANGS) {
 
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${[...pages, ...legal].flatMap(page => LANGS.map(lang => `  <url>
+${[...pages, ...docs].flatMap(page => LANGS.map(lang => `  <url>
     <loc>${url(page[lang].path)}</loc>
 ${LANGS.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${url(page[l].path)}"/>`).join('\n')}
   </url>`)).join('\n')}
@@ -127,4 +132,4 @@ ${LANGS.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${url(pa
 `);
 
 for (const f of ['sw.js', 'robots.txt', 'icons', 'social.png', 'social-en.png', 'screens']) cpSync(join(src, f), join(out, f), { recursive: true });
-console.log(`build: site/ ready (${(pages.length + legal.length) * LANGS.length} pages)`);
+console.log(`build: site/ ready (${(pages.length + docs.length) * LANGS.length} pages)`);

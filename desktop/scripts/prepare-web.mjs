@@ -63,13 +63,13 @@ writeFileSync(join(dist, 'fonts/fonts.css'), css.replaceAll("'Instrument Sans Va
 patch('share button', /const canShare = \(\) => /, 'const canShare = () => false && ');
 patch('privacy note', /I documenti restano sul tuo computer, a meno che tu non scelga di condividerli\./, 'I documenti restano sul tuo computer.');
 
-// 4. Visit statistics are for the website only; the 16bit credit stays as plain text, since a link would
+// 4. Visit statistics, the desktop app download link and the other site links are for the website only; the 16bit credit stays as plain text, since a link would
 // take the app window away from the comparison
 patch('statistics', /<!-- visit statistics[^\n]*\n<script defer src="https:\/\/stats\.16bit\.cloud\/s\.js"[^\n]*\n/, '');
 patch('language hint', /<p class="lang-hint"[^]*?<\/p>\n/, '');
 patch('pages for each profession', /<nav class="for"[^]*?<\/nav>/, '');
-patch('language switch', /<a href="\/en\/" hreflang="en" lang="en">English<\/a> /, '');
-patch('privacy and terms', /<a href="\/privacy\/">Privacy<\/a> <a href="\/termini\/">Termini<\/a> /, '');
+patch('language switch', /<a href="\/en" hreflang="en" lang="en">English<\/a> /, '');
+patch('desktop app, privacy and terms', /<a href="\/scarica">App per computer<\/a> <a href="\/privacy">Privacy<\/a> <a href="\/termini">Termini<\/a> /, '');
 patch('16bit credit', /<a class="by" href="https:\/\/16bit\.it\/">([^]*?)<\/a>/, '<span class="by">$1</span>');
 
 // 4b. App look: a quiet start screen (short title and hint instead of the marketing hero, no site sections,

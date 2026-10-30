@@ -1,8 +1,8 @@
 // Offline copy of the app. The page is always asked to the network first, so a new deploy shows up at once;
 // pdf.js (pinned version) and the fonts come from the cache. The share API is never cached.
-const CACHE = 'raffronto-v4';
+const CACHE = 'raffronto-v5';
 const PDFJS = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/';
-const PRECACHE = ['/', '/en/', '/manifest.webmanifest', '/en/manifest.webmanifest', '/icons/icon.svg', '/icons/icon-192.png', '/icons/icon-512.png', PDFJS + 'pdf.min.mjs', PDFJS + 'pdf.worker.min.mjs'];
+const PRECACHE = ['/', '/en', '/manifest.webmanifest', '/en/manifest.webmanifest', '/icons/icon.svg', '/icons/icon-192.png', '/icons/icon-512.png', PDFJS + 'pdf.min.mjs', PDFJS + 'pdf.worker.min.mjs'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -19,12 +19,14 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET' || url.pathname.startsWith('/api/')) return;
   if (req.mode === 'navigate') {
     // every page is the whole app in one file (a shared comparison lives in the fragment): offline, a page
-    // never opened before falls back to the home page of its language
-    const home = url.pathname.startsWith('/en/') ? '/en/' : '/';
+    // never opened before falls back to the home page of its language. Page addresses have no trailing slash
+    // (/en, /avvocati): an old address with it shares the copy of the one without.
+    const path = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, '') : '/';
+    const home = path === '/en' || path.startsWith('/en/') ? '/en' : '/';
     e.respondWith(fetch(req).then(res => {
-      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(url.pathname, copy)); }
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(path, copy)); }
       return res;
-    }).catch(async () => (await caches.match(url.pathname)) || caches.match(home)));
+    }).catch(async () => (await caches.match(path)) || caches.match(home)));
     return;
   }
   const own = url.origin === location.origin;

@@ -1,11 +1,11 @@
 #!/bin/zsh
-# The whole app in English (/en/): landing, comparison, list of changes, revisions, dialogs, menus, messages,
+# The whole app in English (/en): landing, comparison, list of changes, revisions, dialogs, menus, messages,
 # print sheets and the Word download, with no Italian left in the interface. The documents in tests/fixtures
 # are in Italian, so their content (pages, excerpts in the list, the test certificate authority) is left out of the scan.
 # Usage: tests/english.sh   (called by tests/e2e.sh; URL= to run it on another copy of the site)
 set -u
 URL=${URL:-http://diff-tracker.test/}
-EN=${URL}en/
+EN=${URL}en
 FX=${0:A:h}/fixtures
 S="raff-en-$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c 6)"
 TMP=$(mktemp -d /tmp/raffronto-en-test.XXXXXX)

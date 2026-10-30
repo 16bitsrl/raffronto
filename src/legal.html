@@ -53,6 +53,7 @@ body { margin: 0; font-family: var(--ui); color: var(--ink); background: var(--c
 .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 40px; }
 h1 { font-family: var(--display); font-weight: 400; font-size: clamp(34px, 5vw, 46px); line-height: 1.1; margin: 0 0 8px; color: var(--brand); }
 .updated { color: var(--muted); font-size: 13px; margin: 0 0 32px; }
+.lede { color: var(--muted); font-size: 17px; line-height: 1.5; margin: 4px 0 32px; text-wrap: pretty; }
 main h2 { font-size: 16px; font-weight: 600; margin: 28px 0 6px; }
 main p, main ul { margin: 0 0 10px; }
 main ul { padding-left: 20px; }
@@ -63,6 +64,7 @@ footer { max-width: 720px; margin: 0 auto; padding: 18px 24px 40px; display: fle
 footer::before { content: ""; flex: 0 0 100%; border-top: 1px solid var(--line); margin-bottom: 10px; }
 footer .end { margin-left: auto; }
 </style>
+{{@head}}
 </head>
 <body>
 <header class="topbar">
@@ -77,7 +79,7 @@ footer .end { margin-left: auto; }
 </header>
 <div class="page">
   <h1>{{@h1}}</h1>
-  <p class="updated">{{@updated}}</p>
+  {{@intro}}
   <main>{{@body}}</main>
 </div>
 <footer>{{@footer}}</footer>
