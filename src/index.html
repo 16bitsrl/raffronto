@@ -191,8 +191,15 @@ button { font: inherit; color: inherit; }
 .credit .for a[aria-current] { color: var(--ink); text-decoration: none; }
 .credit .end { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-end; gap: 4px 14px; margin-left: auto; }
 .credit .end > a { white-space: nowrap; }
-/* on narrow screens the links stay on the left and the credit closes the footer on the right */
-@media (max-width: 700px) { .credit .end { flex-basis: 100%; justify-content: flex-start; } .credit .end .by { margin-left: auto; } }
+/* on narrow screens: the slogan, then two columns (the professions, the rest of the site), then the credit on its own line */
+@media (max-width: 700px) {
+  .credit { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; font-size: 14px; }
+  .credit .slogan { grid-column: 1 / -1; margin-bottom: 6px; }
+  .credit .for { grid-column: 1; grid-row: 2 / span 4; flex-direction: column; gap: 12px; }
+  .credit .end { display: contents; }
+  .credit .end > a { grid-column: 2; justify-self: start; }
+  .credit .end > a.by { grid-column: 1 / -1; justify-self: stretch; text-align: right; margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+}
 /* the other language, offered as a quiet pill above the title */
 .lang-hint { max-width: 980px; width: 100%; margin: 0 0 22px; display: flex; }
 .lang-hint[hidden] { display: none; }
