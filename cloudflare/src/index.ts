@@ -181,16 +181,16 @@ async function download(req: Request, name: string, ctx: ExecutionContext): Prom
 		return new Response(null, { status: 405, headers: { ...DOWNLOAD_HEADERS, Allow: "GET, HEAD" } });
 	}
 	// which release is the latest: GitHub answers with a redirect to the file of that release
-	const latest = await fetch(`${RELEASES}/latest/download/${name}`, { method: "HEAD", redirect: "manual" });
-	const pinned = latest.headers.get("Location");
-	if (!pinned || !pinned.startsWith(`${RELEASES}/download/`)) return unavailable();
+	const latest = await github(`${RELEASES}/latest/download/${name}`, { method: "HEAD", redirect: "manual" }, (r) => r.status === 302);
+	const pinned = latest?.headers.get("Location");
+	if (!pinned || !pinned.startsWith(`${RELEASES}/download/`)) return unavailable(`latest ${latest?.status}`);
 
 	const cache = caches.default;
 	const key = new Request(pinned);
 	let hit = await cache.match(key);
 	if (!hit) {
-		const res = await fetch(pinned);
-		if (!res.ok || !res.body) return unavailable();
+		const res = await github(pinned);
+		if (!res?.body) return unavailable(`file ${res?.status}`);
 		const length = res.headers.get("Content-Length");
 		const stored = new Response(res.body, {
 			headers: {
@@ -210,8 +210,8 @@ async function download(req: Request, name: string, ctx: ExecutionContext): Prom
 		await cache.put(key, stored);
 		hit = await cache.match(key);
 		if (!hit) {
-			const again = await fetch(pinned);
-			if (!again.ok || !again.body) return unavailable();
+			const again = await github(pinned);
+			if (!again?.body) return unavailable(`file ${again?.status}`);
 			return send(req, name, type, again.headers.get("Content-Length"), again.body);
 		}
 	}
@@ -232,11 +232,23 @@ function send(req: Request, name: string, type: string, length: string | null, b
 	});
 }
 
-const unavailable = () =>
-	new Response("Download unavailable, please try again later.\n", {
+// GitHub sometimes fails a request: one more try before giving up
+async function github(url: string, init: RequestInit = {}, ok = (r: Response) => r.ok): Promise<Response | null> {
+	for (let attempt = 0; attempt < 2; attempt++) {
+		const res = await fetch(url, init).catch(() => null);
+		if (res && ok(res)) return res;
+		await res?.body?.cancel();
+	}
+	return null;
+}
+
+const unavailable = (why: string) => {
+	console.warn("download unavailable: " + why);
+	return new Response("Download unavailable, please try again later.\n", {
 		status: 502,
 		headers: { ...DOWNLOAD_HEADERS, "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store", "Retry-After": "60" },
 	});
+};
 
 export default {
 	async fetch(req, env, ctx) {
