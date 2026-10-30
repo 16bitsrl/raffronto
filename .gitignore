@@ -1,0 +1,40 @@
+# Private project notes: local only, never in the public repository
+/docs/
+
+# Generated
+/site/
+/desktop/dist/
+/desktop/src-tauri/gen/
+/cloudflare/public/
+/cloudflare/.cloudflare/
+node_modules/
+target/
+
+# Local tool state (Wrangler and Miniflare keep local R2/KV data here)
+.wrangler/
+.dev.vars*
+.env
+.env.*
+!.env.example
+
+# Secrets and signing material
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+*.cer
+*.mobileprovision
+*.keystore
+
+# Test and review output, OS and editor files
+/test-results/
+/playwright-report/
+/.playwright-cli/
+.review/
+__pycache__/
+.DS_Store
+.idea/
+.vscode/
+*.log
+/deploy.php

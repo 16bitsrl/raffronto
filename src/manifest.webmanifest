@@ -1,0 +1,16 @@
+{
+  "name": "Raffronto",
+  "short_name": "Raffronto",
+  "description": "Confronta due versioni di un documento Word o PDF e vedi affiancate tutte le differenze. I file restano sul tuo computer.",
+  "lang": "it",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#E6EAF0",
+  "theme_color": "#F8F9FB",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/app.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

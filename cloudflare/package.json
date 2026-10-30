@@ -1,0 +1,14 @@
+{
+  "name": "raffronto",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "cf": "^1.0.0-beta.26",
+    "wrangler": "^4.156.0"
+  },
+  "scripts": {
+    "sync": "node scripts/sync.mjs",
+    "dev": "node scripts/sync.mjs && cf dev",
+    "deploy": "node scripts/sync.mjs && cf deploy"
+  }
+}

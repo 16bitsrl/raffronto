@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- Link preview image (og:image), 1200x630, Italian; ?lang=en for English. Rendered to src/social.png and src/social-en.png by render.sh -->
+<html lang="it">
+<meta charset="utf-8">
+<style>
+@font-face { font-family: "Instrument Serif"; src: url(../fonts/instrument-serif.woff2) format("woff2"); }
+@font-face { font-family: "Instrument Sans"; src: url(../fonts/instrument-sans.woff2) format("woff2"); font-weight: 400 700; }
+html, body { margin: 0; }
+body {
+  width: 1200px; height: 630px; box-sizing: border-box; padding: 64px 80px 60px;
+  background: #F8F7F3; color: #1A2233; font-family: "Instrument Sans", sans-serif;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.brand { display: flex; align-items: center; gap: 16px; color: #203A59; font-family: "Instrument Serif", serif; font-size: 46px; }
+.brand svg { width: 52px; height: 52px; }
+h1 { font-family: "Instrument Serif", serif; font-weight: 400; font-size: 84px; line-height: 1.1; letter-spacing: -.015em; margin: 0; max-width: 13em; }
+del, ins { white-space: nowrap; border-radius: 6px; padding: 0 .08em; text-decoration-thickness: .06em; }
+del { color: #D7263D; background: rgb(215 38 61 / .12); }
+ins { color: #0E9F6E; background: rgb(14 159 110 / .14); text-decoration: none; }
+.foot { display: flex; justify-content: space-between; align-items: baseline; font-size: 28px; color: #5E6779; }
+.foot b { color: #203A59; font-weight: 600; }
+</style>
+<div class="brand">
+  <svg viewBox="0 0 64 64" aria-hidden="true"><path fill="currentColor" d="M25 17V8H6V56H25V43H21V52H10V12H21V17Z M39 47V56H58V8H39V21H43V12H54V52H43V47Z M17 23H24C36 23 31 35 43 35H47V43H42C28 43 33 31 23 31H17Z"/></svg>
+  Raffronto
+</div>
+<h1>Scopri cosa <del>è rimasto uguale</del> <ins>è cambiato</ins> tra due versioni.</h1>
+<div class="foot"><span>Ogni modifica, anche quella che non ti hanno detto.</span><b>raffronto.app</b></div>
+<script>
+if (new URLSearchParams(location.search).get('lang') === 'en') {
+  document.documentElement.lang = 'en';
+  document.querySelector('h1').innerHTML = 'See what <del>stayed the same</del> <ins>changed</ins> between two versions.';
+  document.querySelector('.foot span').textContent = 'Every change, even the ones nobody told you about.';
+}
+</script>
+</html>

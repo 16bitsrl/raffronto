@@ -1,0 +1,152 @@
+# Desktop app (Tauri 2, desktop/) for macOS, Windows and Linux.
+# - Push of a tag vX.Y.Z: builds every platform into a draft release, then publishes it once all builds pass.
+#   The tag must match "version" in desktop/src-tauri/tauri.conf.json.
+# - Manual run (workflow_dispatch): builds everything and keeps the installers as workflow artifacts, no release.
+# The page is generated from the repository root (scripts/build.mjs, src/) by desktop/scripts/prepare-web.mjs,
+# which Tauri runs before the build (beforeBuildCommand); pdf.js and the fonts come from desktop/ npm packages.
+# Builds are unsigned for now: see desktop/README.md ("Build su GitHub") for the secrets that turn on signing.
+name: Desktop
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Draft release
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      id: ${{ steps.draft.outputs.id }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check that the tag matches the app version
+        run: |
+          version=$(node -p "require('./desktop/src-tauri/tauri.conf.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version $version in desktop/src-tauri/tauri.conf.json"
+            exit 1
+          fi
+      - name: Create the draft release
+        id: draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --draft --verify-tag \
+            --title "Raffronto ${GITHUB_REF_NAME#v}" \
+            --notes "Raffronto per macOS, Windows e Linux. Scarica il file per il tuo sistema qui sotto."
+          echo "id=$(gh release view "$GITHUB_REF_NAME" --json databaseId --jq .databaseId)" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: ${{ matrix.name }}
+    needs: release
+    # runs after the draft release on tags, and on its own for manual runs (where "release" is skipped)
+    if: ${{ !cancelled() && !failure() }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS (Apple Silicon)
+            runner: macos-latest
+            target: aarch64-apple-darwin
+            args: --target aarch64-apple-darwin
+          - name: macOS (Intel)
+            runner: macos-latest
+            target: x86_64-apple-darwin
+            args: --target x86_64-apple-darwin
+          - name: Windows (x64)
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            args: --target x86_64-pc-windows-msvc
+          - name: Windows (ARM64)
+            runner: windows-latest
+            target: aarch64-pc-windows-msvc
+            # the MSI toolchain (WiX 3) cannot build for ARM64: NSIS installer only
+            args: --target aarch64-pc-windows-msvc --bundles nsis
+          - name: Linux (x64)
+            runner: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            args: --target x86_64-unknown-linux-gnu --bundles appimage,deb
+          - name: Linux (ARM64)
+            runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            args: --target aarch64-unknown-linux-gnu --bundles appimage,deb
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: desktop/src-tauri -> target
+          key: ${{ matrix.target }}
+
+      - name: Linux system libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils
+
+      - name: npm ci
+        working-directory: desktop
+        run: npm ci
+
+      - uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS: ad-hoc signature for now (the app opens with right click > Open instead of "damaged").
+          # With an Apple Developer ID, replace "-" with the secret and uncomment the lines below:
+          APPLE_SIGNING_IDENTITY: ${{ runner.os == 'macOS' && '-' || '' }}
+          # APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          # APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}                   # .p12 exported from Keychain, base64
+          # APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # notarization, either with an Apple ID...
+          # APPLE_ID: ${{ secrets.APPLE_ID }}
+          # APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}                         # app-specific password
+          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # ...or with an App Store Connect API key (APPLE_API_KEY_PATH must point to the .p8 written by an earlier step)
+          # APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          # APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          # Windows signing is configured in tauri.conf.json (bundle.windows.signCommand or certificateThumbprint),
+          # see desktop/README.md.
+        with:
+          projectPath: desktop
+          tauriScript: npx tauri
+          args: ${{ matrix.args }}
+          releaseId: ${{ needs.release.outputs.id }}
+          uploadWorkflowArtifacts: true
+          workflowArtifactNamePattern: '[name]_[version]_[platform]_[arch]_[bundle]'
+
+  publish:
+    name: Publish release
+    needs: [release, build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Publish the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --draft=false --latest

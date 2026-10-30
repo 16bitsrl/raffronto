@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="{{@lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{@title}}</title>
+<meta name="description" content="{{@description}}">
+<link rel="canonical" href="{{@url}}">
+{{@alternates}}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Raffronto">
+<meta property="og:locale" content="{{@locale}}">
+<meta property="og:url" content="{{@url}}">
+<meta property="og:title" content="{{@title}}">
+<meta property="og:description" content="{{@description}}">
+<link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#F8F9FB">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script>
+  // same theme as the app: the saved choice, otherwise the system's
+  const savedTheme = localStorage.getItem('raffronto-theme');
+  if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+  else if (matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.dataset.theme = 'dark';
+</script>
+<style>
+/* the colors and type of src/index.html */
+:root {
+  --canvas: #E6EAF0; --chrome: #F8F9FB; --brand: #203A59; --chrome-2: #EEF1F5; --line: #D5DBE4;
+  --ink: #1A2233; --muted: #5E6779; --focus: #3D5AFE;
+  --ui: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --display: "Instrument Serif", "Times New Roman", serif;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --canvas: #161B26; --chrome: #1D2331; --brand: #F8F7F3; --chrome-2: #252C3C; --line: #313A4D;
+  --ink: #E7EAF1; --muted: #A3ACBE; --focus: #7C8CFF;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--ui); color: var(--ink); background: var(--canvas); -webkit-font-smoothing: antialiased; font-size: 15px; line-height: 1.6; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.topbar { height: 56px; display: flex; align-items: center; gap: 16px; padding: 0 14px 0 18px; background: var(--chrome); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 10px; padding: 4px; color: var(--ink); text-decoration: none; }
+.brand svg { display: block; color: var(--brand); }
+.brand em { font-family: var(--display); font-style: normal; font-size: 21px; line-height: 1; }
+.spacer { flex: 1; }
+.ibtn { width: 32px; height: 32px; border-radius: 999px; border: 0; background: transparent; display: inline-grid; place-items: center; cursor: pointer; color: var(--ink); }
+.ibtn:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.ibtn svg { width: 18px; height: 18px; }
+.page { max-width: 720px; margin: 0 auto; padding: 48px 24px 40px; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(34px, 5vw, 46px); line-height: 1.1; margin: 0 0 8px; color: var(--brand); }
+.updated { color: var(--muted); font-size: 13px; margin: 0 0 32px; }
+main h2 { font-size: 16px; font-weight: 600; margin: 28px 0 6px; }
+main p, main ul { margin: 0 0 10px; }
+main ul { padding-left: 20px; }
+main li { margin-bottom: 8px; }
+main a, footer a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+main a:hover, footer a:hover { text-decoration-color: currentColor; }
+footer { max-width: 720px; margin: 0 auto; padding: 18px 24px 40px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; color: var(--muted); font-size: 13px; }
+footer::before { content: ""; flex: 0 0 100%; border-top: 1px solid var(--line); margin-bottom: 10px; }
+footer .end { margin-left: auto; }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="{{@home}}" title="{{@homeLabel}}">
+    <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
+      <path fill="currentColor" d="M25 17V8H6V56H25V43H21V52H10V12H21V17Z M39 47V56H58V8H39V21H43V12H54V52H43V47Z M17 23H24C36 23 31 35 43 35H47V43H42C28 43 33 31 23 31H17Z"/>
+    </svg>
+    <em>Raffronto</em>
+  </a>
+  <div class="spacer"></div>
+  <button class="ibtn" id="themeBtn" title="{{@themeTitle}}" aria-label="{{@themeLabel}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg></button>
+</header>
+<div class="page">
+  <h1>{{@h1}}</h1>
+  <p class="updated">{{@updated}}</p>
+  <main>{{@body}}</main>
+</div>
+<footer>{{@footer}}</footer>
+<script>
+  const paintThemeColor = () => document.querySelector('meta[name=theme-color]').content = getComputedStyle(document.documentElement).getPropertyValue('--chrome').trim();
+  paintThemeColor();
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t; localStorage.setItem('raffronto-theme', t);
+    paintThemeColor();
+  });
+  for (const a of document.querySelectorAll('a[hreflang]')) a.addEventListener('click', () => localStorage.setItem('raffronto-lang', a.hreflang));
+</script>
+</body>
+</html>
